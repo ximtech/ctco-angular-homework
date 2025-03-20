@@ -7,9 +7,9 @@ Angular Training Profile (sharepoint.com)
 GitHub - ctco-dev/angular-template
 
 ## Useful Links
-- Angular documentation (note, most of the projects use versions <17)
+- Angular documentation (note, most of the projects use versions <=17)
    - https://angular.dev/
-- Functional library which is extensively used in P&C
+- Functional library which is extensively used some projects
    - https://www.learnrxjs.io/
 - Widely used Angular state manager
    - https://www.learnrxjs.io/ 

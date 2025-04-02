@@ -1,5 +1,5 @@
 > Project [badges](https://shields.io/)
-> [![Maintenance](https://img.shields.io/maintenance/yes/2024.svg)]()
+> [![Maintenance](https://img.shields.io/maintenance/yes/2025.svg)]()
 
 # angular-template
 Template for angular projects

@@ -1,0 +1,22 @@
+<section class="hero text-center text-white bg-primary py-5">
+  <div class="container">
+    <h1 class="display-5 fw-bold">TechStream Blog</h1>
+    <p class="lead">Daily curated updates from the world of technology and innovation.</p>
+  </div>
+</section>
+
+<div class="container my-5">
+  <div class="row g-4">
+    <div class="col-md-4" *ngFor="let post of posts">
+      <div class="card h-100 shadow-sm">
+        <img [src]="post.image" class="card-img-top" [alt]="post.title">
+        <div class="card-body">
+          <div class="text-muted small mb-1">{{ post.date }}</div>
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text">{{ post.description }}</p>
+          <a [routerLink]="post.link" class="btn btn-sm btn-outline-primary mt-2">Read More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,4 @@
-> Project [badges](https://shields.io/)
-> [![Maintenance](https://img.shields.io/maintenance/yes/2025.svg)]()
+[![Build](https://github.com/ximtech/ctco-angular-homework/actions/workflows/angular.yml/badge.svg)](https://github.com/ximtech/ctco-angular-homework/actions/workflows/angular.yml)
 
 # angular-template
 Template for angular projects

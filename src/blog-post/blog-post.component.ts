@@ -1,18 +1,33 @@
-import { Component } from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {FormsModule} from '@angular/forms';
-import {NgForOf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {BlogHeaderComponent} from '../blog-header/blog-header.component';
+import {Popover} from 'bootstrap';
 
 @Component({
   selector: 'app-blog-post',
   imports: [
     FormsModule,
-    NgForOf
+    NgForOf,
+    BlogHeaderComponent,
+    NgClass,
+    NgIf
   ],
   templateUrl: './blog-post.component.html',
   styleUrl: './blog-post.component.css'
 })
-export class BlogPostComponent {
+export class BlogPostComponent implements AfterViewInit {
+
+  currentRating: number = 0;
+  hoverRating: number = 0;
+
+  authorInfo = {
+    name: 'Emily Chen',
+    email: 'emily.chen@example.com',
+    bio: 'Technology journalist covering AI, startups, and Apple for over a decade.',
+    twitter: '@emilychen'
+  };
 
   post = {
     id: 1,
@@ -47,6 +62,11 @@ export class BlogPostComponent {
 
   constructor(private route: ActivatedRoute) {}
 
+  ngAfterViewInit(): void {
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+    popoverTriggerList.forEach(el => new Popover(el, { trigger: 'focus', placement: 'top' }));
+  }
+
   submitComment() {
     if (this.newComment.name && this.newComment.message) {
       this.comments.push({
@@ -56,6 +76,18 @@ export class BlogPostComponent {
       });
       this.newComment = { name: '', message: '' };
     }
+  }
+
+  setRating(rating: number) {
+    this.currentRating = rating;
+  }
+
+  setHover(rating: number) {
+    this.hoverRating = rating;
+  }
+
+  clearHover() {
+    this.hoverRating = 0;
   }
 
 }

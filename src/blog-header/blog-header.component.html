@@ -1,0 +1,10 @@
+<section class="hero text-center text-white bg-primary py-5">
+  <div class="container">
+    <h1 routerLink="/" type="button" class="display-5 fw-bold">TechStream Blog</h1>
+    <p class="lead text-light">Smarter voice. Smarter actions. Privacy-focused intelligence.</p>
+
+    @if (isBlogListPage) {
+      <a routerLink="/create" routerLinkActive="active" class="hero-button">Create Post</a>
+    }
+  </div>
+</section>

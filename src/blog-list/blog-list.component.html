@@ -1,36 +1,39 @@
 <app-blog-header/>
 
+@let authorList = authors() | async;
+
 <div class="container my-5">
   <div class="row g-4">
     <div class="row mb-4 align-items-center g-2">
       <!-- Sort Dropdown -->
-      <select class="form-select w-auto" [(ngModel)]="sortOption">
+      <select class="form-select w-auto dropdown" (change)="onOptionSelect($event)">
         <option value="date-desc">Newest First</option>
         <option value="date-asc">Oldest First</option>
-        <option value="title-asc">Title A-Z</option>
-        <option value="title-desc">Title Z-A</option>
       </select>
 
       <!-- Search Input -->
-      <div class="col-md-8">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Search by title or author..."
-          [(ngModel)]="searchTerm"
-        />
+      <div class="col-md-4">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by title or author..."
+            (input)="onSearchInputSet($event)"/>
+        </div>
       </div>
     </div>
 
-    @for (post of filteredAndSortedPosts; track post) {
+    @for (post of postList() | async; track post) {
       <div class="col-md-4">
         <div class="card h-100 shadow-sm">
-          <img [src]="post.image" class="card-img-top" [alt]="post.title">
+          <img [src]="post.imageUrl" class="card-img-top" [alt]="post.title">
           <div class="card-body">
-            <div class="text-muted small mb-1">{{ post.date }} • {{ post.author }}</div>
+            <div class="text-muted small mb-1">{{ post.date }} • {{ findPostAuthor(authorList, post)?.name }}</div>
             <h5 class="card-title">{{ post.title }}</h5>
-            <p class="card-text">{{ post.description }}</p>
-            <a [routerLink]="post.link" class="btn btn-sm btn-outline-primary mt-2">Read More</a>
+            <p class="card-text">{{ post.body }}</p>
+          </div>
+          <div class="mb-3 ms-3">
+            <a [routerLink]="['post', post.id, post.userId]" class="btn btn-sm btn-outline-primary mt-2">Read More</a>
           </div>
         </div>
       </div>

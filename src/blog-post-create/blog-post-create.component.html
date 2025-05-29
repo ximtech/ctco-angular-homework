@@ -3,19 +3,34 @@
 <div class="container my-5">
   <h2 class="mb-4">Add New Blog Post</h2>
 
-  <div *ngIf="submitted" class="alert alert-success">Post submitted successfully!</div>
+  @if (submitted) {
+    <div class="alert alert-success">Post submitted successfully!</div>
+  }
 
   <form (ngSubmit)="submitPost()" #formRef="ngForm">
-    <div class="mb-3">
+    <div class="mb-1">
       <label for="author" class="form-label">Author (Name or Email)</label>
       <input
         type="text"
         id="author"
         name="author"
         class="form-control"
-        [(ngModel)]="post.author"
+        [(ngModel)]="author.email"
         required
         placeholder="Your name or email"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="title" class="form-label">Post Title</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        class="form-control"
+        [(ngModel)]="post.title"
+        required
+        placeholder="Your post title"
       />
     </div>
 
@@ -25,7 +40,7 @@
         id="message"
         name="message"
         class="form-control"
-        [(ngModel)]="post.message"
+        [(ngModel)]="post.body"
         rows="6"
         required
         placeholder="Write your blog post content here..."

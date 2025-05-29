@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
 import {BlogHeaderComponent} from '../blog-header/blog-header.component';
+import {IBlogPostAuthor} from '../shared/model/blog-post-author.model';
+import {IBlogPostItem} from '../shared/model/blog-post.model';
+import {BlogApiService} from '../shared/service/blog-api.service';
 
 @Component({
   selector: 'app-blog-post-create',
   imports: [
     FormsModule,
-    NgIf,
     BlogHeaderComponent
   ],
   templateUrl: './blog-post-create.component.html',
@@ -15,21 +16,19 @@ import {BlogHeaderComponent} from '../blog-header/blog-header.component';
 })
 export class BlogPostCreateComponent {
 
-  post = {
-    author: '',
-    message: '',
-    title: 'Test Post'
-  };
+  private blogApiService: BlogApiService = inject(BlogApiService);
 
-  submitted = false;
+  post: IBlogPostItem = {} as IBlogPostItem;
+  author: IBlogPostAuthor = {} as IBlogPostAuthor;
+  submitted: boolean = false;
 
   submitPost() {
-    if (this.post.author && this.post.message) {
+    if (this.author.email && this.post.body && this.post.title) {
       console.log('Submitted post:', this.post);
+      this.post.userId = 1;
+      this.blogApiService.saveNewBlogPost(this.post).subscribe();
+      this.post = { body: '', title: ''} as IBlogPostItem;  // Reset form
       this.submitted = true;
-
-      // Reset form
-      this.post = { author: '', message: '' , title: ''};
     }
   }
 

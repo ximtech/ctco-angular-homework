@@ -1,81 +1,65 @@
-import {AfterViewInit, Component} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {AfterViewInit, Component, computed, effect, inject, signal} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {FormsModule} from '@angular/forms';
-import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {AsyncPipe, NgClass} from '@angular/common';
 import {BlogHeaderComponent} from '../blog-header/blog-header.component';
 import {Popover} from 'bootstrap';
+import {BlogApiService} from '../shared/service/blog-api.service';
+import {map, Observable} from 'rxjs';
+import {IBlogPostItem} from '../shared/model/blog-post.model';
+import {BlogPostCommentModel} from '../shared/model/blog-post-comment.model';
+import {IBlogPostAuthor} from '../shared/model/blog-post-author.model';
 
 @Component({
   selector: 'app-blog-post',
   imports: [
     FormsModule,
-    NgForOf,
     BlogHeaderComponent,
     NgClass,
-    NgIf
+    AsyncPipe
   ],
   templateUrl: './blog-post.component.html',
   styleUrl: './blog-post.component.css'
 })
 export class BlogPostComponent implements AfterViewInit {
 
+  private blogApiService: BlogApiService = inject(BlogApiService);
+  private route: ActivatedRoute = inject(ActivatedRoute);
+
+  postId: number = this.route.snapshot.params['id'];
+  authorId: number = this.route.snapshot.params['userId'];
+  newComment = signal<BlogPostCommentModel | undefined>(undefined);
+
   currentRating: number = 0;
   hoverRating: number = 0;
 
-  authorInfo = {
-    name: 'Emily Chen',
-    email: 'emily.chen@example.com',
-    bio: 'Technology journalist covering AI, startups, and Apple for over a decade.',
-    twitter: '@emilychen'
-  };
+  readonly blogPostData$: Observable<IBlogPostItem> = this.blogApiService.getPostById(this.postId);
+  readonly blogPostComments$: Observable<BlogPostCommentModel[]> = this.blogApiService.getPostCommentsById(this.postId);
+  readonly blogPostAuthorInfo$: Observable<IBlogPostAuthor> = this.blogApiService.getPostAuthorById(this.authorId);
 
-  post = {
-    id: 1,
-    title: 'AI-Powered Siri Unveiled at WWDC',
-    date: 'May 20, 2025',
-    author: 'Emily Chen',
-    content: [
-      'At WWDC 2025, Apple showcased a dramatically improved version of Siri, powered by cutting-edge generative AI. The upgraded assistant can now summarize articles, send intelligent replies, and perform multi-step actions — all processed privately on-device.',
-      '“This is a new era for personal AI,” said Tim Cook. The new Siri will launch in iOS 19 and macOS 15 later this year.',
-      'Apple emphasized privacy and user control, with AI features built on-device and not shared with cloud servers, setting itself apart from competitors like Google and OpenAI.'
-    ],
-    image: 'https://source.unsplash.com/featured/?apple,ai'
-  };
-
-  comments = [
-    {
-      author: 'John Doe',
-      date: 'May 21, 2025',
-      content: 'This is a huge leap for voice assistants. Can’t wait to try it on my iPhone!'
-    },
-    {
-      author: 'Sara T.',
-      date: 'May 21, 2025',
-      content: 'I love that they’re doing everything on-device. Big win for privacy.'
-    }
-  ];
-
-  newComment = {
-    name: '',
-    message: ''
-  };
-
-  constructor(private route: ActivatedRoute) {}
+  blogPost = signal(this.blogPostData$);
+  authorInfo = signal(this.blogPostAuthorInfo$);
+  postComments = computed(() => {
+    console.log(this.newComment());
+    return this.blogPostComments$.pipe(
+      map((comments:BlogPostCommentModel[]) => {
+        return comments;
+      }));
+  });
 
   ngAfterViewInit(): void {
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
     popoverTriggerList.forEach(el => new Popover(el, { trigger: 'focus', placement: 'top' }));
   }
 
-  submitComment() {
-    if (this.newComment.name && this.newComment.message) {
-      this.comments.push({
-        author: this.newComment.name,
-        date: new Date().toLocaleDateString(),
-        content: this.newComment.message
-      });
-      this.newComment = { name: '', message: '' };
-    }
+  submitComment(formValue: any) {
+    this.newComment.set({
+      email: formValue.name,
+      name: formValue.name,
+      postId: this.postId,
+      body: formValue.message} as BlogPostCommentModel);
+    this.blogApiService.saveNewComment(this.newComment())
+      .subscribe(value => console.log(value));
   }
 
   setRating(rating: number) {

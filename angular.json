@@ -67,7 +67,8 @@
               "buildTarget": "ctco-angular-homework:build:production"
             },
             "development": {
-              "buildTarget": "ctco-angular-homework:build:development"
+              "buildTarget": "ctco-angular-homework:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

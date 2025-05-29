@@ -1,8 +1,16 @@
-import { Component } from '@angular/core';
+import {Component, computed, effect, inject, model, signal} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {NgForOf} from '@angular/common';
+import {AsyncPipe, NgForOf} from '@angular/common';
 import {BlogHeaderComponent} from '../blog-header/blog-header.component';
 import {FormsModule} from '@angular/forms';
+import {BlogApiService} from '../shared/service/blog-api.service';
+import {map, Observable} from 'rxjs';
+import {IBlogPostItem} from '../shared/model/blog-post.model';
+import {IBlogPostAuthor} from '../shared/model/blog-post-author.model';
+import {toSignal} from '@angular/core/rxjs-interop';
+
+const MAX_BLOG_POST_TITLE_LENGTH: number = 50;
+const SEARCH_INPUT_TEXT_MIN_LENGTH: number = 3;
 
 @Component({
   selector: 'app-blog-list',
@@ -10,64 +18,57 @@ import {FormsModule} from '@angular/forms';
     RouterLink,
     BlogHeaderComponent,
     FormsModule,
+    AsyncPipe,
   ],
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.css'
 })
 export class BlogListComponent {
 
-  searchTerm = '';
-  sortOption = 'date-desc';
+  private blogApiService: BlogApiService = inject(BlogApiService);
 
-  posts = [
-    {
-      title: 'AI-Powered Siri Unveiled at WWDC',
-      author: 'Emily Chen',
-      date: 'May 20, 2025',
-      description: 'Apple revealed a privacy-focused, on-device AI overhaul of Siri at WWDC 2025.',
-      image: 'https://source.unsplash.com/featured/?apple,ai',
-      link: '/post/1'
-    },
-    {
-      title: 'Google Gemini 2 Goes Multimodal',
-      date: 'May 18, 2025',
-      author: 'Mark Jensen',
-      description: 'Gemini 2 introduces real-time image and code understanding with improved accuracy.',
-      image: 'https://source.unsplash.com/featured/?google,gemini',
-      link: '/post/2'
-    },
-    {
-      title: 'ChatGPT Gets Memory and Voice',
-      date: 'May 15, 2025',
-      author: 'Samantha Ray',
-      description: 'OpenAI rolls out long-term memory and natural voice interaction to ChatGPT Pro users.',
-      image: 'https://source.unsplash.com/featured/?openai,chatgpt',
-      link: '/post/3'
-    }
-  ];
+  sortOption = signal<string>('date-desc');
+  searchTerm = signal<string>('');
 
-  get filteredAndSortedPosts() {
-    let filtered = this.posts.filter(post =>
-      post.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      post.author.toLowerCase().includes(this.searchTerm.toLowerCase())
+  postList = computed(() => {
+    const sort = this.sortOption();
+    const textInput = this.searchTerm();
+
+    return this.blogApiService.listOfBlogs$.pipe(
+      map((blogs: IBlogPostItem[]) => {
+        blogs.forEach(item => {
+          if (item.body.length > MAX_BLOG_POST_TITLE_LENGTH) {  // abbreviate long text
+            item.body = item.body.substring(0, MAX_BLOG_POST_TITLE_LENGTH) + '...';
+          }})
+
+        let filtered = blogs.filter(post =>
+          post.title.toLowerCase().includes(textInput.toLowerCase())
+        );
+
+        if (sort === 'date-asc') {
+          filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        } else { // 'date-desc'
+          filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
+        return filtered;
+      }),
     );
+  });
 
-    switch (this.sortOption) {
-      case 'title-asc':
-        filtered.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case 'title-desc':
-        filtered.sort((a, b) => b.title.localeCompare(a.title));
-        break;
-      case 'date-asc':
-        filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        break;
-      default: // 'date-desc'
-        filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        break;
+  authors = signal<Observable<IBlogPostAuthor[]>>(this.blogApiService.listOfAuthors$);
+
+  findPostAuthor(authors: IBlogPostAuthor[] | null, post: IBlogPostItem) {
+    return authors !== null ? authors.find((author: IBlogPostAuthor) => author.id == post.userId) : null;
+  }
+
+  onOptionSelect(event: any) {
+    this.sortOption.set(event.target.value);
+  }
+
+  onSearchInputSet(event: any) {
+    if (event.target.value.length >= SEARCH_INPUT_TEXT_MIN_LENGTH || event.target.value.length == 0) {
+      this.searchTerm.set(event.target.value);
     }
-
-    return filtered;
   }
 
 }

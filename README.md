@@ -1,4 +1,4 @@
-[![Build](https://github.com/ximtech/ctco-angular-homework/actions/workflows/angular.yml/badge.svg)](https://github.com/ximtech/ctco-angular-homework/actions/workflows/angular.yml)
+[![Build](https://github.com/ximtech/ctco-angular-homework/actions/workflows/build.yml/badge.svg)](https://github.com/ximtech/ctco-angular-homework/actions/workflows/build.yml)
 
 # angular-template
 Template for angular projects

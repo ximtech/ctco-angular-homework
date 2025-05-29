@@ -1,17 +1,21 @@
 [![Build](https://github.com/ximtech/ctco-angular-homework/actions/workflows/build.yml/badge.svg)](https://github.com/ximtech/ctco-angular-homework/actions/workflows/build.yml)
 
-# angular-template
-Template for angular projects
+# Blog Post Project 
+
+This project was created for angular learning purposes and demonstrates RxJs and Signal features
 
 ## Features
 
-> What can it do?
+> - Blog post template view with text and images
+> - Create new post with random image
+> - Comments for every post
+> - Bootsrap 5 styles and grid for mobile view
 
 ## Required Software
 
 - [Node.js](https://nodejs.org/en) LTS version
 - [Angular CLI](https://v16.angular.io/cli)
-    - `npm install -g @angular/cli@16.2.16`
+    - `npm install -g @angular/cli@19.2.0`
 
 ## Install
 
@@ -29,6 +33,7 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Tech Stack
+## Run local API server
 
-> What's inside ?
+Open terminal in `api-server` directory. The run `npm run` then check console output should be as follows:
+`Blog Post API Server listening on port 8081!`

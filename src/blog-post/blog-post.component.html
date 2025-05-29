@@ -2,7 +2,7 @@
 
 @let post = blogPost() | async;
 @let author = authorInfo() | async;
-@let comments = postComments() | async;
+@let comments = postComments();
 
 <div class="container my-5">
   <h2 class="fw-bold">{{ post?.title }}</h2>
